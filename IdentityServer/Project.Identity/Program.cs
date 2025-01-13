@@ -8,34 +8,14 @@ namespace Project.Identity.Client
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllersWithViews();
-
-            builder.RegisterPersistence();
-
-            builder.Services.AddRazorPages(); 
+            builder
+                .RegisterPersistence()
+                .RegisterApiClient();
 
             var app = builder.Build();
 
             app.ConfigurePersistence();
-
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-            app.MapRazorPages()
-                .RequireAuthorization();
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.ConfigureApiClient();
 
             ThreadPool.SetMinThreads(50, 50);
 
