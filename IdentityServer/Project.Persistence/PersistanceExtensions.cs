@@ -29,7 +29,17 @@ namespace Project.Persistence
                     }
                 }, ServiceLifetime.Scoped);
 
-            builder.Services.AddIdentity<ProjectUser, IdentityRole>()
+            builder.Services
+                .AddIdentity<ProjectUser, IdentityRole>(setup =>
+                {
+                    setup.Password.RequireNonAlphanumeric = false;
+                    setup.Password.RequireLowercase = false;
+                    setup.Password.RequireUppercase = false;
+                    setup.Password.RequireDigit = false;
+                    setup.Password.RequiredLength = 1;
+                    setup.Password.RequiredUniqueChars = 0;
+
+                })
                 .AddEntityFrameworkStores<ProjectIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -41,10 +51,11 @@ namespace Project.Persistence
             using var scope = app.ApplicationServices.CreateScope();
             var services = scope.ServiceProvider;
             var db = services.GetRequiredService<ProjectIdentityDbContext>();
+            var initializer = services.GetRequiredService<IDbInitializer>();
 
             db.Database.Migrate();
 
-            db.Seed().Wait();
+            initializer.Start().Wait();
 
             return app;
         }

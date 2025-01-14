@@ -4,6 +4,5 @@ namespace Project.Domain.IdentityEntities
 {
     public class ProjectUser : IdentityUser
     {
-
     }
 }

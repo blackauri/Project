@@ -1,4 +1,7 @@
-﻿namespace Project.Identity.Client
+﻿using Project.Domain.IdentityEntities;
+using Project.Infrastructure;
+
+namespace Project.Identity.Client
 {
     public static class ApiExtensions
     {
@@ -7,14 +10,19 @@
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
-            builder.Services.AddIdentityServer(options =>
-            {
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
-                options.EmitStaticAudienceClaim = true;
-            });
+            builder.Services
+                .AddIdentityServer(options =>
+                {
+                    options.Events.RaiseErrorEvents = true;
+                    options.Events.RaiseInformationEvents = true;
+                    options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseSuccessEvents = true;
+                    options.EmitStaticAudienceClaim = true;
+                })
+                .AddInMemoryIdentityResources(ProjectIdentityItems.IdentityResources)
+                .AddInMemoryApiScopes(ProjectIdentityItems.ApiScopes)
+                .AddAspNetIdentity<ProjectUser>()
+                .AddDeveloperSigningCredential();
 
             return builder;
         }

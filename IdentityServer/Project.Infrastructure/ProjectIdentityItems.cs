@@ -1,11 +1,12 @@
-﻿using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
 
-namespace Project.Identity.Client
+namespace Project.Infrastructure
 {
-    public static class IdentitySeed
+    public static class ProjectIdentityItems
     {
-        public const string Admin = "admin";
-        public const string Customer = "customer";
+        public const string AdminRole = "admin";
+        public const string CustomerRole = "customer";
 
         public static IEnumerable<IdentityResource> IdentityResources =>
             new List<IdentityResource>
@@ -24,7 +25,7 @@ namespace Project.Identity.Client
                 new(name: "delete", displayName: "You can delete")
             };
 
-        public static IEnumerable<Duende.IdentityServer.Models.Client> Clients =>
+        public static IEnumerable<Client> Clients =>
             [
                 new() {
                         ClientId = "service.client",
@@ -36,7 +37,15 @@ namespace Project.Identity.Client
                         ClientId = "space-client-Id",
                         ClientSecrets = { new Secret("newSecret".Sha256()) },
                         AllowedGrantTypes = GrantTypes.Code,
-                        AllowedScopes = { "space-scope", "read", "write", "delete" }
+                        AllowedScopes =
+                        {
+                            "space-scope",
+                            "read",
+                            "write",
+                            IdentityServerConstants.StandardScopes.OpenId
+                        },
+                        RedirectUris={ "https://localhost:7002/signin-oidc" },
+                        PostLogoutRedirectUris={"https://localhost:7002/signout-callback-oidc" },
                     }
             ];
     }
